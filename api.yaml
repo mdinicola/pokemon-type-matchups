@@ -1,0 +1,39 @@
+---
+swagger: "2.0"
+info:
+  title: Pokemon Type Matchups
+  description: API for Pokemon Type Matchups application
+  version: 1.0.0
+basePath: "/"
+paths:
+  "/example":
+    get:
+      summary: Example Function
+      description: This is an example function
+      operationId: ExampleFunction
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Success
+        404:
+          description: Not found
+        500:
+          description: 500 Internal Server Error
+        503:
+          description: SERVICE UNAVAILABLE
+      x-amazon-apigateway-integration:
+        type: aws_proxy
+        httpMethod: POST
+        uri: 
+          Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ExampleFunction.Arn}/invocations"
+      security:
+        - api_key: []
+schemes:
+  - https
+securityDefinitions:
+  api_key:
+    type: apiKey
+    name: x-api-key
+    in: header
+    x-amazon-apigateway-api-key-source: HEADER

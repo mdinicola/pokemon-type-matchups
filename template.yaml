@@ -1,0 +1,93 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: SAM template for PokemonTypeMatchups Application
+Globals:
+  Function:
+    Runtime: python3.9
+    Timeout: 60
+    Environment:
+      Variables:
+        ServiceName: !Ref ServiceName
+Parameters:
+  ServiceName:
+    Type: String
+    Default: PokemonTypeMatchups
+Resources:
+  LambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+            
+  ApiGatewayApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
+      Name: !Sub "${ServiceName}-ApiGateway"
+      DefinitionBody:
+        Fn::Transform:
+          Name: AWS::Include
+          Parameters:
+            Location: "./api.yaml"
+      MethodSettings:
+      - LoggingLevel: ERROR
+        ResourcePath: "/*"
+        HttpMethod: "*"
+
+  UsagePlan:
+    Type: AWS::ApiGateway::UsagePlan
+    Properties:
+      UsagePlanName: !Sub "${ServiceName}-Default-Usage-Plan"
+      ApiStages:
+        - ApiId: !Ref ApiGatewayApi
+          Stage: !Ref ApiGatewayApi.Stage
+      Description: !Sub "Default usage plan for the ${ServiceName} service"
+      Quota:
+        Limit: 5000
+        Period: MONTH
+      Throttle:
+        BurstLimit: 200
+        RateLimit: 100
+
+  ApiKey:
+    Type: AWS::ApiGateway::ApiKey
+    Properties:
+      Name: !Sub "${ServiceName}-Default-API-Key"
+      Description: !Sub "Default API key for the ${ServiceName} service"
+      Enabled: True
+      StageKeys:
+        - RestApiId: !Ref ApiGatewayApi
+          StageName: !Ref ApiGatewayApi.Stage
+
+  UsagePlanApiKey:
+    Type: AWS::ApiGateway::UsagePlanKey
+    Properties: 
+      KeyId: !Ref ApiKey
+      KeyType: 'API_KEY'
+      UsagePlanId: !Ref UsagePlan
+
+  ExampleFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "${ServiceName}-Example"
+      Role: !GetAtt LambdaRole.Arn
+      CodeUri: app/
+      Handler: api_handler.example
+      Events:
+        Get:
+          Type: Api
+          Properties:
+            RestApiId:
+              Ref: ApiGatewayApi
+            Path: "/example"
+            Method: get
+            Auth:
+              ApiKeyRequired: true
