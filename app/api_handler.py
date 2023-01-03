@@ -1,4 +1,5 @@
 from json_encoders import EnhancedJSONEncoder
+from type_matchups import get_defense_matchups
 import json
 import logging
 
@@ -10,10 +11,18 @@ def handle_response(status_code, body):
             'body': body
         }
 
-def example(event, context):
+def get_defensive_matchups(event, context):
     try:
+        query_parameters = event.get('queryStringParameters', None)
+        if query_parameters is None:
+            raise RuntimeError("Types are required")
+        types = list(filter(None, query_parameters.get('types', '').split(' ')))
+        matchups = get_defense_matchups(types)
         response = {
-            'data': 'hello world'
+            'meta': {
+                'count': len(matchups)
+            },
+            'data': matchups
         }
         return handle_response(200, json.dumps(response, cls=EnhancedJSONEncoder))
     except Exception as e:

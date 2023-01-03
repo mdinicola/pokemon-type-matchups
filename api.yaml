@@ -6,7 +6,7 @@ info:
   version: 1.0.0
 basePath: "/"
 paths:
-  "/example":
+  "/matchups/defense":
     get:
       summary: Example Function
       description: This is an example function
@@ -26,7 +26,7 @@ paths:
         type: aws_proxy
         httpMethod: POST
         uri: 
-          Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ExampleFunction.Arn}/invocations"
+          Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetDefenseMatchupsFunction.Arn}/invocations"
       security:
         - api_key: []
 schemes:
