@@ -8,7 +8,7 @@ Parameters:
     Type: String
   RepositoryName:
     Description: The full repository name e.g some-user/my-repo
-    Default: mdinicola/pokemon-type-matchups-alexa
+    Default: mdinicola/pokemon-type-matchups
     Type: String
   RepositoryBranchName:
     Description: The repository branch to watch for changes
