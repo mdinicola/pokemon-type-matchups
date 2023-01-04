@@ -74,20 +74,20 @@ Resources:
       KeyType: 'API_KEY'
       UsagePlanId: !Ref UsagePlan
 
-  ExampleFunction:
+  GetDefenseMatchupsFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: !Sub "${ServiceName}-Example"
+      FunctionName: !Sub "${ServiceName}-GetDefenseMatchups"
       Role: !GetAtt LambdaRole.Arn
       CodeUri: app/
-      Handler: api_handler.example
+      Handler: api_handler.get_defensive_matchups
       Events:
         Get:
           Type: Api
           Properties:
             RestApiId:
               Ref: ApiGatewayApi
-            Path: "/example"
+            Path: "/matchups/defense"
             Method: get
             Auth:
               ApiKeyRequired: true
