@@ -8,9 +8,9 @@ basePath: "/"
 paths:
   "/matchups/defense":
     get:
-      summary: Example Function
-      description: This is an example function
-      operationId: ExampleFunction
+      summary: Get Defense Matchups Function
+      description: Gets defensive matchups for provided types
+      operationId: GetDefenseMatchups
       produces:
         - application/json
       responses:
