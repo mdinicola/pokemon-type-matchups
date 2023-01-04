@@ -4,6 +4,18 @@ import logging
 
 _logger = logging.getLogger(__name__)
 
+@dataclass
+class TypeMatchup:
+  offense_type: str
+  defense_type: str
+  effectiveness: float
+
+@dataclass
+class GroupMatchup:
+  offense_type: str
+  defense_types: List[str]
+  effectiveness: float
+
 pokemon_types = [ 'normal',
         'fire',
         'water',
@@ -44,18 +56,6 @@ matchups_chart = [
     [1, 0.5, 0.5, 0.5, 1, 2, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 0.5, 2],
     [1, 0.5, 1, 1, 1, 1, 2, 0.5, 1, 1, 1, 1, 1, 1, 2, 2, 0.5, 1],
 ]
-
-@dataclass
-class TypeMatchup:
-  offense_type: str
-  defense_type: str
-  effectiveness: float
-
-@dataclass
-class GroupMatchup:
-  offense_type: str
-  defense_types: List[str]
-  effectiveness: float
 
 def get_matchups_list():
     matchups: List[TypeMatchup] = []
