@@ -87,6 +87,7 @@ Resources:
 
   GetDefenseMatchupsFunction:
     Type: AWS::Serverless::Function
+    DependsOn: SecretsManagerSecret
     Properties:
       FunctionName: !Sub "${ServiceName}-GetDefenseMatchups"
       Role: !GetAtt LambdaRole.Arn
