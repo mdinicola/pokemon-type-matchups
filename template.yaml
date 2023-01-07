@@ -26,7 +26,14 @@ Resources:
               - sts:AssumeRole
       ManagedPolicyArns:
         - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-            
+
+  SecretsManagerSecret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name: !Sub "apps/${ServiceName}"
+      Description: !Sub "Secret values for the ${ServiceName} application"
+      SecretString: '{"alexaSkillId": ""}'
+
   ApiGatewayApi:
     Type: AWS::Serverless::Api
     Properties:
