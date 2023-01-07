@@ -8,10 +8,14 @@ Globals:
     Environment:
       Variables:
         ServiceName: !Ref ServiceName
+        PipelineExecutionId: !Ref PipelineExecutionId
 Parameters:
   ServiceName:
     Type: String
     Default: PokemonTypeMatchups
+  PipelineExecutionId:
+    Type: String
+    Default: ""
 Resources:
   LambdaRole:
     Type: AWS::IAM::Role
