@@ -113,6 +113,10 @@ Resources:
                 StackName: !Ref ServiceName
                 TemplatePath: "BuildArtifact::packaged-template.yaml"
                 ChangeSetName: !Sub ${ServiceName}-Deploy
+                ParameterOverrides: !Sub |
+                  {
+                    "PipelineExecutionId": "#{codepipeline.PipelineExecutionId}"
+                  }
               RunOrder: 1
             - Name: ExecuteChangeSet
               ActionTypeId:
