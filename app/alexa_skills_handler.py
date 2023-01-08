@@ -72,7 +72,7 @@ def get_alexa_client():
 
 def handle_skill_request(event, context):
     handler = get_alexa_client().get_lambda_handler()
-    _logger.info(event['body'])
+    _logger.info(event)
     return handler(event, context)
 
 def handle_api_request(event, context):
