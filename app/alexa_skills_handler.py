@@ -1,6 +1,7 @@
 from ask_sdk_core.dispatch_components import AbstractRequestHandler
-from os import environ
 from alexa_client import AlexaClient, IntentReflectorHandler, CancelOrStopIntentHandler, SessionEndedRequestHandler, CatchAllExceptionHandler
+from type_matchups import get_defense_matchups
+from os import environ
 import ask_sdk_core.utils as ask_utils
 import json
 import logging
@@ -29,13 +30,21 @@ class GetDefenseMatchupsIntentHandler(AbstractRequestHandler):
 
     def handle(self, handler_input):
         slot_value = ask_utils.get_slot_value_v2(handler_input,'pokemonTypes')
-        slot_values = ask_utils.get_simple_slot_values(slot_value)
-        message = ' '.join(map(lambda x: x.value, slot_values))
-        speak_output = message
+        slot_values = list(map(lambda x: x.value, ask_utils.get_simple_slot_values(slot_value)))
+
+        matchups = get_defense_matchups(slot_values)
+
+        supereffective_matchups = list(map(lambda x: x.offense_type, filter(lambda y: y.effectiveness in [4, 2], matchups)))
+        effective_matchups = list(map(lambda x: x.offense_type, filter(lambda y: y.effectiveness in [1], matchups)))
+        noneffective_matchups = list(map(lambda x: x.offense_type, filter(lambda y: y.effectiveness in [0.25, 0.5], matchups)))
+
+        message = f"Takes super effective damage from: {','.join(supereffective_matchups)}; "
+        message += f"Takes normal damage from: {','.join(effective_matchups)}; "
+        message += f"Resists: {','.join(noneffective_matchups)}"
 
         return (
             handler_input.response_builder
-                .speak(speak_output)
+                .speak(message)
                 .response
         )
 
