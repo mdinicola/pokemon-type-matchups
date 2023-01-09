@@ -13,7 +13,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
         return ask_utils.is_request_type("LaunchRequest")(handler_input)
 
     def handle(self, handler_input):
-        speak_output = "Welcome to the Watch Wizard. You can say 'recommend a movie'."
+        speak_output = "Welcome to Pokemon Type Matchups. You can say 'recommend a movie'."
 
         return (
             handler_input.response_builder
@@ -23,12 +23,14 @@ class LaunchRequestHandler(AbstractRequestHandler):
         )
 
 class GetDefenseMatchupsIntentHandler(AbstractRequestHandler):
-    """Handler for Recommend Movie Intent."""
+    """Handler for GetDefenseMatchups Intent."""
     def can_handle(self, handler_input):
         return ask_utils.is_intent_name("GetDefenseMatchups")(handler_input)
 
     def handle(self, handler_input):
-        message = "hello world"
+        slot_value = ask_utils.get_slot_value_v2(handler_input,'pokemonTypes')
+        slot_values = ask_utils.get_simple_slot_values(slot_value)
+        message = ' '.join(map(lambda x: x.value, slot_values))
         speak_output = message
 
         return (
@@ -70,11 +72,6 @@ def get_alexa_client():
     alexa_client.add_exception_handler(CatchAllExceptionHandler())
     return alexa_client
 
-def handle_skill_request(event, context):
-    handler = get_alexa_client().get_lambda_handler()
-    _logger.info(event)
-    return handler(event, context)
-
 def handle_api_request(event, context):
     handler = get_alexa_client().get_webservice_handler()
     response = handler.verify_request_and_dispatch(event['headers'], event['body'])
@@ -83,3 +80,7 @@ def handle_api_request(event, context):
         'statusCode': 200,
         'body': json.dumps(response)
     }
+
+def handle_skill_request(event, context):
+    handler = get_alexa_client().get_lambda_handler()
+    return handler(event, context)
