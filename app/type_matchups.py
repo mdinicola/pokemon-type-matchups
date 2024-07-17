@@ -76,9 +76,6 @@ def get_defense_matchups(defense_types: list[str]) -> list[GroupMatchup]:
         group_matchups: list[GroupMatchup] = list(map(lambda x, y: GroupMatchup(offense_type = x.offense_type, defense_types = defense_types, 
             effectiveness = x.effectiveness * y.effectiveness), matchups[0], matchups[1]))
     
-    else:
-        raise RuntimeError(f"{len(defense_types)} types were included in this request.  Only 1-2 types are allowed")
-    
     group_matchups.sort(key = lambda x: x.effectiveness, reverse=True)
     return group_matchups
 
