@@ -1,38 +1,52 @@
 from aws_lambda_powertools import Logger
 from aws_lambda_powertools.utilities.typing import LambdaContext
+from aws_lambda_powertools.event_handler import APIGatewayRestResolver, Response, content_types
+from aws_lambda_powertools.event_handler.openapi.params import Query
+from aws_lambda_powertools.shared.types import Annotated
+from aws_lambda_powertools.event_handler.openapi.exceptions import RequestValidationError
 
-from json_encoders import EnhancedJSONEncoder
+from http import HTTPStatus
+from typing import List
+
 from type_matchups import get_defense_matchups
-import json
 
-_logger = Logger()
+logger = Logger()
+app = APIGatewayRestResolver(enable_validation=True)
 
-def handle_response(status_code, body):
-    return {
-            'statusCode': status_code,
-            'body': body
-        }
-
-def get_defensive_matchups(event, context):
-    try:
-        query_parameters = event.get('queryStringParameters', None)
-        if query_parameters is None:
-            raise RuntimeError("Types are required")
-        types = list(filter(None, query_parameters.get('types', '').split(' ')))
-        matchups = get_defense_matchups(types)
-        response = {
-            'meta': {
-                'count': len(matchups)
-            },
-            'data': matchups
-        }
-        return handle_response(200, json.dumps(response, cls=EnhancedJSONEncoder))
-    except Exception as e:
-        _logger.exception(e)
-        message = 'An unexpected error ocurred.  See log for details.'
-        response = {
+@app.exception_handler(Exception)
+def handle_exception(e: Exception):
+    logger.error(e)
+    return Response(
+        status_code = HTTPStatus.INTERNAL_SERVER_ERROR,
+        content_type = content_types.APPLICATION_JSON,
+        body = {
             'error': {
-                'message': message
+                'msg': str(e)
             }
         }
-        return handle_response(500, json.dumps(response))
+    )
+
+@app.exception_handler(RequestValidationError)
+def handle_validation_error(e: RequestValidationError):
+    logger.error(e.errors())
+    return Response(
+        status_code = HTTPStatus.BAD_REQUEST,
+        content_type = content_types.APPLICATION_JSON,
+        body = {
+            'errors': e.errors()
+        }
+    )
+
+@app.get("/matchups/defense")
+def get_defensive_matchups(pokemon_types: Annotated[List[str], Query(alias = 'type')]) -> dict:       
+    matchups = get_defense_matchups(pokemon_types)
+    response = {
+        'meta': {
+            'count': len(matchups)
+        },
+        'matchups': matchups
+    }
+    return response
+
+def lambda_handler(event: dict, context: LambdaContext):
+    return app.resolve(event, context)
