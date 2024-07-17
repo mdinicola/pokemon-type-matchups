@@ -1,9 +1,11 @@
+from aws_lambda_powertools import Logger
+from aws_lambda_powertools.utilities.typing import LambdaContext
+
 from json_encoders import EnhancedJSONEncoder
 from type_matchups import get_defense_matchups
 import json
-import logging
 
-_logger = logging.getLogger(__name__)
+_logger = Logger()
 
 def handle_response(status_code, body):
     return {
