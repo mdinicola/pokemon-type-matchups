@@ -90,7 +90,7 @@ Resources:
       FunctionName: !Sub "${ServiceName}-GetDefenseMatchups"
       Role: !GetAtt LambdaRole.Arn
       CodeUri: app/
-      Handler: handlers/api/matchups.get_defensive_matchups
+      Handler: handlers/api/matchups.lambda_handler
       Events:
         Get:
           Type: Api

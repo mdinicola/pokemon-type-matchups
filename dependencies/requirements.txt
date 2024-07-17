@@ -1,1 +1,2 @@
 aws-lambda-powertools==2.41.0
+pydantic==2.8.2
