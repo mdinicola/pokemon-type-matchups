@@ -4,7 +4,9 @@ Description: SAM template for PokemonTypeMatchups Application
 Globals:
   Function:
     Runtime: python3.12
-    Timeout: 60
+    Timeout: 30
+    Layers:
+      - !Ref DependenciesLayer
     Environment:
       Variables:
         ServiceName: !Ref ServiceName
@@ -77,6 +79,13 @@ Resources:
       KeyId: !Ref ApiKey
       KeyType: 'API_KEY'
       UsagePlanId: !Ref UsagePlan
+
+  DependenciesLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      ContentUri: dependencies
+    Metadata:
+      BuildMethod: python3.12
 
   GetDefenseMatchupsFunction:
     Type: AWS::Serverless::Function
