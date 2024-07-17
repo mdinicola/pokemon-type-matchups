@@ -6,7 +6,6 @@ from aws_lambda_powertools.shared.types import Annotated
 from aws_lambda_powertools.event_handler.openapi.exceptions import RequestValidationError
 
 from http import HTTPStatus
-from typing import List
 
 from type_matchups import get_defense_matchups
 
@@ -38,7 +37,7 @@ def handle_validation_error(e: RequestValidationError):
     )
 
 @app.get("/matchups/defense")
-def get_defensive_matchups(pokemon_types: Annotated[List[str], Query(alias = 'type')]) -> dict:       
+def get_defensive_matchups(pokemon_types: Annotated[list[str], Query(alias = 'type')]) -> dict:       
     matchups = get_defense_matchups(pokemon_types)
     response = {
         'meta': {
