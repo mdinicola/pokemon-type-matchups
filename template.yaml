@@ -7,6 +7,7 @@ Globals:
     Timeout: 30
     Layers:
       - !Ref DependenciesLayer
+      - arn:aws:lambda:ca-central-1:017000801446:layer:AWSLambdaPowertoolsPythonV2:76
     Environment:
       Variables:
         POWERTOOLS_SERVICE_NAME: !Ref ServiceName
